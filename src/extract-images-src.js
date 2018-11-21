@@ -10,8 +10,5 @@ module.exports = function extractImagesSrc (markup) {
 	for (let tag in allTags) {
 		console.log(tag.match(imgTagsRegExp));
 	}
-	return matches;
+	// return matches;
 };
-
-// g - looking for all
-// m - multiline mode

@@ -1,56 +1,59 @@
 import extractImagesSrc from '../src/extract-images-src';
 
 describe('extractImagesSrc', function () {
-	describe('expected', function () {
-		let markup;
+	describe('expects', function () {
+		let notMarkup, markupWithNoImage, markUpWithImageOneQuotted, markUpWithImageDoubleQuotted;
+		let markUpWithImageNoQuotes, markUpWithThreeImages, markUpWithImagesMultiline, markupWithoutSrc;
+		let murkupWithSrcAnyPosition, murkupSrcWithoutImgWithSrc;
 
 		beforeEach(function () {
-			markup = '<div><img src="images/image.png" /></div>';
+			notMarkup = 'Anything besides html';
+			markupWithoutSrc = '<div><img/></div>';
+			markupWithNoImage = '<div><p>Just some text</p></div>';
+			markUpWithImageOneQuotted = "<div><img src='images/image.png' /></div>";
+			markUpWithImageDoubleQuotted = '<div><img src="images/image.png" /></div>';
+			markUpWithImageNoQuotes = '<img src=images/image1.png />';
+			markUpWithThreeImages = '<img src="images/image1.png"/><img src="images/image2.png"/><img src="images/image3.png"/>';
+			markUpWithImagesMultiline = `<div>\n<img src="images/image.png"/>\n</div>\n`;
+			murkupSrcWithoutImgWithSrc = '<iframe src="images/image.html"></iframe>';
+			murkupWithSrcAnyPosition = '<img width="100px" src="images/image.png"/>';
 		});
 
-		test('HTML murkup', function () {
-			markup = 'Anything besides html';
-			expect(extractImagesSrc(markup)).toEqual([]);
+		test('only HTML murkup', function () {
+			expect(extractImagesSrc(notMarkup)).toEqual([]);
 		});
 		test('returns an array', function () {
-			expect(extractImagesSrc(markup)).toBeInstanceOf(Array);
+			expect(extractImagesSrc(markUpWithImageOneQuotted)).toBeInstanceOf(Array);
 		});
-		test('single quotes type in `src` ', function () {
-			markup = "<div><img src='images/image.png'/></div>";
-			expect(extractImagesSrc(markup)).toBeTruthy();
+		test('single quotes type in attribute `src` to be supported', function () {
+			expect(extractImagesSrc(markUpWithImageOneQuotted)).toEqual(['images/image.png']);
 		});
-		test('double quotes type in `src` ', function () {
-			markup = '<div><img src="images/image.png"/></div>';
-			expect(extractImagesSrc(markup)).toBeTruthy();
+		test('double quotes type in attribute `src` to be supported', function () {
+			expect(extractImagesSrc(markUpWithImageDoubleQuotted)).toEqual(['images/image.png']);
 		});
-		test('multiline mode supported', function () {
-			markup = `
-				<div>
-					<img src="images/image.png"/>
-				</div>
-			`;
-			expect(extractImagesSrc(markup)).toBeTruthy();
+		test('no quotes type in attribute `src` to be supported', function () {
+			expect(extractImagesSrc(markUpWithImageNoQuotes)).toEqual(['images/image.png']);
+		});
+		test('multiline mode to be supported', function () {
+			expect(extractImagesSrc(markUpWithImagesMultiline)).toEqual(['images/image.png']);
+		});
+		test('markup without tag `img` to be supported', function () {
+			expect(extractImagesSrc(markupWithNoImage)).toEqual([]);
+		});
+		test('tag `img` without attribute `src` to be supported', function () {
+			expect(extractImagesSrc(markupWithoutSrc)).toEqual([]);
 		});
 		test('any position of attribute `src`', function () {
-			markup = "<div><img class='bg-img' src='images/image.png' width='200'/></div>";
-			expect(extractImagesSrc(markup)).toBeTruthy();
+			expect(extractImagesSrc(murkupWithSrcAnyPosition)).toEqual(['images/image.png']);
 		});
-
 		test('any location of tag `img`', function () {
-			markup = "<div><p class='img-text'><img src='images/image.png'/></p></div>";
-			expect(extractImagesSrc(markup)).toBeTruthy();
+			expect(extractImagesSrc(markUpWithImageOneQuotted)).toEqual(['images/image.png']);
 		});
-	});
-
-	describe('unexpected', function () {
-		let markup;
-
-		beforeEach(function () {
-			markup = '<div><img src="images/image.png" /></div>';
+		test('any quantity of tag `img` to be supported', function () {
+			expect(extractImagesSrc(markUpWithThreeImages)).toEqual(['images/image.png']);
 		});
-
-		test('`img` tag does not include property `src`', function () {
-			expect(extractImagesSrc(markup)).toBeTruthy();
+		test('ingnoring any other attributes `src` except in tag `img`', function () {
+			expect(extractImagesSrc(murkupSrcWithoutImgWithSrc)).toEqual([]);
 		});
 	});
 });

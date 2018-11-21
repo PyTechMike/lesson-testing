@@ -15,7 +15,7 @@ xdescribe('wait expected', function () {
 	});
 	test('can be resolved', async function () {
 		await whenWaited.then(callback);
-		expect(callback).toBeCalled();
+		expect(callback).toHaveBeenCalled();
 	});
 	test('returns correct time delta', async function () {
 		let time = await whenWaited;
