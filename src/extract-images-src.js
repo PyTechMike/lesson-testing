@@ -1,14 +1,38 @@
-// export default
 module.exports = function extractImagesSrc (markup) {
-	let TagsRegExp = new RegExp(/<\/?[\s\w"#-/:;=?]+>/gim);
-	let imgTagsRegExp = /<img src=["'](.*)["'].*>/gi;
+	let result;
 
-	let allTags = markup.match(TagsRegExp);
+	// let findSrcInImg = /<img.+src=(.+).+>/g; // <img src=images/image1.png />
 
-	let matches = [];
 
-	for (let tag in allTags) {
-		console.log(tag.match(imgTagsRegExp));
+	// let findSrcInImg = /<img.+src=["'](.+)["'].+>/gm; // <img src=fesfs />
+	let findSrcInImg = /<img.+src=(?:(["'])(.+)["']|(?!["'])(.+)).+>/gm; // <img src=fesfs />
+
+	// let markUpWithSrcNoQuotes = '<img src=images/image.png >';
+
+	// let markUpWithSrcDoubleQuotted = '<img src="images/image.png" />';
+
+	// result = findSrcInImg.exec(markUpWithSrcNoQuotes);
+
+	result = findSrcInImg.exec(markup);
+
+	// console.log(result);
+	if (result) {
+		if (result[1] === undefined) {
+		// return ([result[result.length - 1]]);
+			return ([result[3]]);
+
+		}
+		return ([result[2]]);
+
+
+		// if (result.length > 3) {
+		// 	// result.forEach(function (elem, index) {
+
+		// 	// });
+		// 	result.shift();
+		// 	return result;
+		// }
+
 	}
-	// return matches;
+	return ([]);
 };
