@@ -10,10 +10,10 @@ describe('extractImagesSrc', function () {
 			notMarkup = 'Anything besides html';
 			markupWithoutSrc = '<img />';
 			markupWithNoImage = '<p>Just some text</p>';
-			markUpWithSrcOneQuotted = "<div><img src='images/image.png' /></div>";
+			markUpWithSrcOneQuotted = "<img src='images/image.png' />";
 			markUpWithSrcDoubleQuotted = '<img src="images/image.png" />';
 			markUpWithSrcNoQuotes = '<img src=images/image.png />';
-			markUpWithThreeImages = '<img src="images/image1.png"/><img src="images/image2.png"/><img src="images/image3.png"/>';
+			markUpWithThreeImages = '<img src="images/image1.png"/><img src=images/image2.png /><img src="images/image3.png"/>';
 			markUpWithImagesMultiline = `<div>\n<img \nsrc="images/image.png"\n/>\n</div>\n`;
 			murkupSrcWithoutImgWithSrc = '<iframe src="images/image.html"></iframe>';
 			murkupWithSrcAnyPosition = '<img width="100px" src="images/image.png" height="200px"/>';
