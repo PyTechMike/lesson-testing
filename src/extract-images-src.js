@@ -1,38 +1,18 @@
 module.exports = function extractImagesSrc (markup) {
-	let result;
+	let resultFullInfo;
+	let result = [];
 
-	// let findSrcInImg = /<img.+src=(.+).+>/g; // <img src=images/image1.png />
+	let findSrcInImg = /<img[\S\s]+src=(?:(["'])([\S\s]+?)["']|(?!["'])(\S+))[\S\s]*?\/>/gm;
 
-
-	// let findSrcInImg = /<img.+src=["'](.+)["'].+>/gm; // <img src=fesfs />
-	let findSrcInImg = /<img.+src=(?:(["'])(.+)["']|(?!["'])(.+)).+>/gm; // <img src=fesfs />
-
-	// let markUpWithSrcNoQuotes = '<img src=images/image.png >';
-
-	// let markUpWithSrcDoubleQuotted = '<img src="images/image.png" />';
-
-	// result = findSrcInImg.exec(markUpWithSrcNoQuotes);
-
-	result = findSrcInImg.exec(markup);
-
-	// console.log(result);
-	if (result) {
-		if (result[1] === undefined) {
-		// return ([result[result.length - 1]]);
-			return ([result[3]]);
-
+	while (resultFullInfo = findSrcInImg.exec(markup)) {
+		if (resultFullInfo) {
+			if (resultFullInfo[1] === undefined) {
+				result.push(resultFullInfo[3]);
+			}
+			else {
+				result.push(resultFullInfo[2]);
+			}
 		}
-		return ([result[2]]);
-
-
-		// if (result.length > 3) {
-		// 	// result.forEach(function (elem, index) {
-
-		// 	// });
-		// 	result.shift();
-		// 	return result;
-		// }
-
 	}
-	return ([]);
+	return result;
 };
