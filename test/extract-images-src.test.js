@@ -2,19 +2,28 @@ import extractImagesSrc from '../src/extract-images-src';
 
 describe('extractImagesSrc', function () {
 	describe('can', function () {
-		let notMarkup, markupWithNoImage, markUpWithSrcOneQuotted, markUpWithSrcDoubleQuotted;
-		let markUpWithSrcNoQuotes, markUpWithThreeImages, markUpWithImagesMultiline, markupWithoutSrc;
-		let murkupWithSrcAnyPosition, murkupSrcWithoutImgWithSrc;
+		let notMarkup, markupWithNoImage, markupWithSrcOneQuotted, markupWithSrcDoubleQuotted;
+		let markupWithSrcNoQuotes, markupWithThreeImages, markupWithImagesMultiline, markupWithoutSrc;
+		let murkupWithSrcAnyPosition, murkupSrcWithoutImgWithSrc, murkupImgWithoutEndingSlash;
+		let murkupWithFakeSrc;
 
 		beforeEach(function () {
 			notMarkup = 'Anything besides html';
 			markupWithoutSrc = '<img />';
 			markupWithNoImage = '<p>Just some text</p>';
-			markUpWithSrcOneQuotted = "<img src='images/image.png' />";
-			markUpWithSrcDoubleQuotted = '<img src="images/image.png" />';
-			markUpWithSrcNoQuotes = '<img src=images/image.png />';
-			markUpWithThreeImages = '<img src="images/image1.png"/><img src=images/image2.png /><img src="images/image3.png"/>';
-			markUpWithImagesMultiline = `<div>\n<img \nsrc="images/image.png"\n/>\n</div>\n`;
+			markupWithSrcOneQuotted = "<img src='images/image.png' />";
+			markupWithSrcDoubleQuotted = '<img src="images/image.png" />';
+			markupWithSrcNoQuotes = '<img src=images/image.png />';
+			markupWithThreeImages = '<img src="images/image1.png"/><img src=images/image2.png /><img src="images/image3.png"/>';
+			markupWithImagesMultiline = `
+			<div>
+				<img 
+					src="images/image.png"
+				/>
+			</div>
+			`;
+			murkupWithFakeSrc = '<img fakesrc="123"/>';
+			murkupImgWithoutEndingSlash = '<img src=images/image.png >';
 			murkupSrcWithoutImgWithSrc = '<iframe src="images/image.html"></iframe>';
 			murkupWithSrcAnyPosition = '<img width="100px" src="images/image.png" height="200px"/>';
 		});
@@ -29,29 +38,36 @@ describe('extractImagesSrc', function () {
 			test('tag `img` without attribute `src`', function () {
 				expect(extractImagesSrc(markupWithoutSrc)).toEqual([]);
 			});
+			test('tag `img` without ending slash', function () {
+				expect(extractImagesSrc(murkupImgWithoutEndingSlash)).toEqual(['images/image.png']);
+			});
+			test('tag `img` with fake `src` (if before `src` there is a symbol without whitespace)', function () {
+				expect(extractImagesSrc(murkupWithFakeSrc)).toEqual([]);
+			});
+
 		});
 
 		describe('find any type of attribute `src` quotes', function () {
 			test('(single)', function () {
-				expect(extractImagesSrc(markUpWithSrcOneQuotted)).toEqual(['images/image.png']);
+				expect(extractImagesSrc(markupWithSrcOneQuotted)).toEqual(['images/image.png']);
 			});
 			test('(double)', function () {
-				expect(extractImagesSrc(markUpWithSrcDoubleQuotted)).toEqual(['images/image.png']);
+				expect(extractImagesSrc(markupWithSrcDoubleQuotted)).toEqual(['images/image.png']);
 			});
 			test('(no quotes)', function () {
-				expect(extractImagesSrc(markUpWithSrcNoQuotes)).toEqual(['images/image.png']);
+				expect(extractImagesSrc(markupWithSrcNoQuotes)).toEqual(['images/image.png']);
 			});
 			test('(multiline)', function () {
-				expect(extractImagesSrc(markUpWithImagesMultiline)).toEqual(['images/image.png']);
+				expect(extractImagesSrc(markupWithImagesMultiline)).toEqual(['images/image.png']);
 			});
 		});
 
 		describe('find', function () {
 			test('any tag `img` with any location', function () {
-				expect(extractImagesSrc(markUpWithSrcOneQuotted)).toEqual(['images/image.png']);
+				expect(extractImagesSrc(markupWithSrcOneQuotted)).toEqual(['images/image.png']);
 			});
 			test('any quantity of tags `img`', function () {
-				expect(extractImagesSrc(markUpWithThreeImages)).toEqual(['images/image1.png', 'images/image2.png', 'images/image3.png']);
+				expect(extractImagesSrc(markupWithThreeImages)).toEqual(['images/image1.png', 'images/image2.png', 'images/image3.png']);
 			});
 			test('attribute `src` with any position in tag `img`', function () {
 				expect(extractImagesSrc(murkupWithSrcAnyPosition)).toEqual(['images/image.png']);
@@ -63,7 +79,7 @@ describe('extractImagesSrc', function () {
 		});
 
 		test('return an array', function () {
-			expect(extractImagesSrc(markUpWithSrcOneQuotted)).toBeInstanceOf(Array);
+			expect(extractImagesSrc(markupWithSrcOneQuotted)).toBeInstanceOf(Array);
 		});
 	});
 });
