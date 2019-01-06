@@ -5,7 +5,7 @@ describe('extractImagesSrc', function () {
 		let notMarkup, markupWithNoImage, markupWithSrcOneQuotted, markupWithSrcDoubleQuotted;
 		let markupWithSrcNoQuotes, markupWithThreeImages, markupWithImagesMultiline, markupWithoutSrc;
 		let murkupWithSrcAnyPosition, murkupSrcWithoutImgWithSrc, murkupImgWithoutEndingSlash;
-		let murkupWithFakeSrc;
+		let murkupWithFakeSrc, murkupWithDataSrc, murkupImgWithoutWhitespaceBeforeClosing;
 
 		beforeEach(function () {
 			notMarkup = 'Anything besides html';
@@ -22,8 +22,10 @@ describe('extractImagesSrc', function () {
 				/>
 			</div>
 			`;
-			murkupWithFakeSrc = '<img fakesrc="123"/>';
+			murkupWithFakeSrc = '<img fakesrc="images/image.png"/>';
+			murkupWithDataSrc = '<img data-src="images/image.png"/>';
 			murkupImgWithoutEndingSlash = '<img src=images/image.png >';
+			murkupImgWithoutWhitespaceBeforeClosing = "<img src='images/image.png'>";
 			murkupSrcWithoutImgWithSrc = '<iframe src="images/image.html"></iframe>';
 			murkupWithSrcAnyPosition = '<img width="100px" src="images/image.png" height="200px"/>';
 		});
@@ -41,10 +43,9 @@ describe('extractImagesSrc', function () {
 			test('tag `img` without ending slash', function () {
 				expect(extractImagesSrc(murkupImgWithoutEndingSlash)).toEqual(['images/image.png']);
 			});
-			test('tag `img` with fake `src` (if before `src` there is a symbol without whitespace)', function () {
-				expect(extractImagesSrc(murkupWithFakeSrc)).toEqual([]);
+			test('tag `img` without whitespace before closing', function () {
+				expect(extractImagesSrc(murkupImgWithoutWhitespaceBeforeClosing)).toEqual(['images/image.png']);
 			});
-
 		});
 
 		describe('find any type of attribute `src` quotes', function () {
@@ -74,8 +75,16 @@ describe('extractImagesSrc', function () {
 			});
 		});
 
-		test('ingnore any other attributes `src` except in tag `img`', function () {
-			expect(extractImagesSrc(murkupSrcWithoutImgWithSrc)).toEqual([]);
+		describe('ignore', function () {
+			test('any other attributes `src` except in tag `img`', function () {
+				expect(extractImagesSrc(murkupSrcWithoutImgWithSrc)).toEqual([]);
+			});
+			test('tag `img` with fake `src` (if before `src` there is a symbol without whitespace)', function () {
+				expect(extractImagesSrc(murkupWithFakeSrc)).toEqual([]);
+			});
+			test('tag `img` with `data-src`', function () {
+				expect(extractImagesSrc(murkupWithDataSrc)).toEqual([]);
+			});
 		});
 
 		test('return an array', function () {
